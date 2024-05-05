@@ -26,10 +26,6 @@ func main() {
 		logrus.Fatalf("error initialize config: %s", err.Error())
 	}
 
-	if err := initEnv(); err != nil {
-		logrus.Fatalf("error initialize env: %s", err.Error())
-	}
-
 	redisDBConfig := &redis.Options{
 		Addr: os.Getenv("REDIS_ADDR"),
 		Username: os.Getenv("REDIS_USERNAME"),
