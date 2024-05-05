@@ -12,7 +12,7 @@ type Server struct {
 func (s *Server) Start(port string) error {
 	s.httpServer = &http.Server{
 		Handler: s,
-		Addr: ":" + port,
+		Addr: "0.0.0.0:" + port,
 	}
 
 	return s.httpServer.ListenAndServe()
