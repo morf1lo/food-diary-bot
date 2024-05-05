@@ -1,6 +1,9 @@
 package fooddiarybot
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
 type Server struct {
 	httpServer *http.Server
@@ -15,4 +18,10 @@ func (s *Server) Start(port string) error {
 	return s.httpServer.ListenAndServe()
 }
 
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.httpServer.Shutdown(ctx)
+}

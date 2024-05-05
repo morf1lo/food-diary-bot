@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"os"
 	"os/signal"
@@ -60,9 +61,6 @@ func main() {
 
 	bot := handler.NewBot(handlers)
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-
 	botConfig := &configs.TgBotConfig{
 		Token: os.Getenv("BOT_TOKEN"),
 		Debug: viper.GetBool("db.debug"),
@@ -70,13 +68,29 @@ func main() {
 
 	server := new(fooddiarybot.Server)
 	go func() {
-		if err := server.Start("5000"); err != nil {
+		if err := server.Start("8080"); err != nil {
 			logrus.Fatalf("error occured while running server: %s", err.Error())
 		}
 	}()
 
-	if err := bot.Start(botConfig); err != nil {
-		logrus.Fatalf("error occured while running bot: %s", err.Error())
+	logrus.Print("Server Started")
+
+	go func() {
+		if err := bot.Start(botConfig); err != nil {
+			logrus.Fatalf("error occured while running bot: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("Bot Started")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Print("Server Shutting Down")
+
+	if err := server.Shutdown(context.Background()); err != nil {
+		logrus.Fatalf("error occured on server shutting down: %s", err.Error())
 	}
 }
 
