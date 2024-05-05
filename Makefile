@@ -1,2 +1,5 @@
+build:
+	go build -o bot ./cmd/bot/main.go
+
 run:
-	go run cmd/bot/main.go
+	./bot
