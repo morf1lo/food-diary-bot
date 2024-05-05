@@ -1,5 +1,5 @@
 db:
-  sslmode: "require"
+  sslmode: "disable"
 
 bot:
   debug: false

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/tls"
 	"os"
 	"os/signal"
 	"syscall"
@@ -31,7 +30,6 @@ func main() {
 		Protocol: 2,
 		ReadTimeout: time.Second * 10,
 		WriteTimeout: time.Second * 10,
-		TLSConfig: &tls.Config{},
 	}
 	rdb := redis.NewClient(redisDBConfig)
 
