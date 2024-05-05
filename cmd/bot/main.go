@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
+	fooddiarybot "github.com/morf1lo/food-diary-bot"
 	"github.com/morf1lo/food-diary-bot/configs"
 	"github.com/morf1lo/food-diary-bot/handler"
 	"github.com/morf1lo/food-diary-bot/repository"
@@ -66,17 +67,17 @@ func main() {
 		Token: os.Getenv("BOT_TOKEN"),
 		Debug: viper.GetBool("db.debug"),
 	}
+
+	server := new(fooddiarybot.Server)
 	go func() {
-		if err := bot.Start(botConfig); err != nil {
-			logrus.Fatalf("error occured while running bot: %s", err.Error())
+		if err := server.Start("5000"); err != nil {
+			logrus.Fatalf("error occured while running server: %s", err.Error())
 		}
 	}()
 
-	logrus.Print("Bot Started")
-
-	<-quit
-
-	logrus.Print("Bot Shutting Down")
+	if err := bot.Start(botConfig); err != nil {
+		logrus.Fatalf("error occured while running bot: %s", err.Error())
+	}
 }
 
 func initConfig() error {
