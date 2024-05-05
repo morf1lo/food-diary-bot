@@ -1,0 +1,5 @@
+db:
+  sslmode: "require"
+
+bot:
+  debug: false
