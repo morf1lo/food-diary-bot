@@ -1,15 +1,12 @@
 package main
 
 import (
-	"context"
 	"crypto/tls"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/joho/godotenv"
-	fooddiarybot "github.com/morf1lo/food-diary-bot"
 	"github.com/morf1lo/food-diary-bot/configs"
 	"github.com/morf1lo/food-diary-bot/handler"
 	"github.com/morf1lo/food-diary-bot/repository"
@@ -62,15 +59,6 @@ func main() {
 		Debug: viper.GetBool("db.debug"),
 	}
 
-	server := new(fooddiarybot.Server)
-	go func() {
-		if err := server.Start("8080"); err != nil {
-			logrus.Fatalf("error occured while running server: %s", err.Error())
-		}
-	}()
-
-	logrus.Print("Server Started")
-
 	go func() {
 		if err := bot.Start(botConfig); err != nil {
 			logrus.Fatalf("error occured while running bot: %s", err.Error())
@@ -83,11 +71,7 @@ func main() {
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logrus.Print("Server Shutting Down")
-
-	if err := server.Shutdown(context.Background()); err != nil {
-		logrus.Fatalf("error occured on server shutting down: %s", err.Error())
-	}
+	logrus.Print("Bot Shutting Down")
 }
 
 func initConfig() error {
@@ -95,8 +79,4 @@ func initConfig() error {
 	viper.AddConfigPath("configs")
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
-}
-
-func initEnv() error {
-	return godotenv.Load()
 }
