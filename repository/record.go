@@ -75,7 +75,7 @@ func (r *RecordRepo) FindLast(telegramID int64) (*model.Record, error) {
 
 func (r *RecordRepo) Search(telegramID int64, query string) ([]*model.Record, error) {
 	var records []*model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month' AND r.body LIKE $2", telegramID, strings.ToLower("%"+query+"%")).Find(&records).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month' AND LOWER(r.body) LIKE $2", telegramID, strings.ToLower("%"+query+"%")).Find(&records).Error; err != nil {
 		return nil, err
 	}
 
