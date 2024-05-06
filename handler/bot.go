@@ -30,7 +30,7 @@ func (b *Bot) Start(cfg *configs.TgBotConfig) error {
 			go b.handler.Command(tgbot, update)
 		}
 
-		if update.Message != nil {
+		if update.Message != nil && !update.Message.IsCommand() {
 			go b.handler.Message(tgbot, update)
 		}
 	}
