@@ -79,7 +79,7 @@ func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 			return
 		}
 
-		text := record.DateAdded.Format("02.01.2006") + "\n" + record.Body + " - " + record.DateAdded.Format("15:04:05")
+		text := record.DateAdded.Format("02.01.2006") + "\n" + record.Body + " - " + record.DateAdded.Format("15:04")
 
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 		tgbot.Send(msg)
