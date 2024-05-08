@@ -16,6 +16,23 @@ func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		tgbot.Send(msg)
 	}
 
+	if update.Message.Command() == "help" {
+		msgText := `
+		Commands:
+		/add - Create a record
+
+		/month - All records made within 1 month
+		/week  - All records made within 1 week
+		/day All records made on this day
+		/all - All your records
+		/last - Your last meal
+
+		/search <query> - Search records that contains query
+		`
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
+		tgbot.Send(msg)
+	}
+
 	if update.Message.Command() == "add" {
 		if err := h.services.Record.RequestToAdd(strconv.Itoa(int(update.Message.From.ID))); err != nil {
 			logrus.Fatalf("error creating redis record: %s", err.Error())
