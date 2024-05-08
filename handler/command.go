@@ -18,16 +18,16 @@ func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 	if update.Message.Command() == "help" {
 		msgText := `
-		Commands:
-		/add - Create a record
+Commands:
+/add - Create a record
 
-		/month - All records made within 1 month
-		/week  - All records made within 1 week
-		/day All records made on this day
-		/all - All your records
-		/last - Your last meal
+/month - All records made within 1 month
+/week  - All records made within 1 week
+/day All records made on this day
+/all - All your records
+/last - Your last meal
 
-		/search <query> - Search records that contains query
+/search <query> - Search records that contains query
 		`
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, msgText)
 		tgbot.Send(msg)

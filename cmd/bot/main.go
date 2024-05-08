@@ -6,6 +6,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/morf1lo/food-diary-bot/configs"
 	"github.com/morf1lo/food-diary-bot/handler"
 	"github.com/morf1lo/food-diary-bot/repository"
@@ -20,6 +21,12 @@ func main() {
 
 	if err := initConfig(); err != nil {
 		logrus.Fatalf("error initialize config: %s", err.Error())
+	}
+
+	if viper.GetString("app.state") == "development" {
+		if err := initEnv(); err != nil {
+			logrus.Fatalf("error initialize env: %s", err.Error())
+		}
 	}
 
 	redisDBConfig := &redis.Options{
@@ -77,4 +84,8 @@ func initConfig() error {
 	viper.AddConfigPath("configs")
 	viper.SetConfigName("config")
 	return viper.ReadInConfig()
+}
+
+func initEnv() error {
+	return godotenv.Load()
 }
