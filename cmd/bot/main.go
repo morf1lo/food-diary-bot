@@ -46,7 +46,7 @@ func main() {
 		Host: os.Getenv("DB_HOST"),
 		Port: os.Getenv("DB_PORT"),
 		DBName: os.Getenv("DB_NAME"),
-		SSLMode: viper.GetString("db.sslmode"),
+		SSLMode: os.Getenv("DB_SSLMODE"),
 	}
 	db, err := repository.NewPostgresDB(dbConfig)
 	if err != nil {
