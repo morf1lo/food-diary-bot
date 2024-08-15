@@ -26,16 +26,7 @@ func (r *RecordRepo) FindByID(id int64) (*model.Record, error) {
 	return &record, nil
 }
 
-func (r *RecordRepo) FindAll(telegramID int64) ([]*model.Record, error) {
-	var records []*model.Record
-	if err := r.db.Find(&records).Error; err != nil {
-		return nil, err
-	}
-
-	return records, nil
-}
-
-func (r *RecordRepo) FindByMonth(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinMonth(telegramID int64) ([]*model.Record, error) {
 	var records []*model.Record
 	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month'", telegramID).Find(&records).Error; err != nil {
 		return nil, err
@@ -44,7 +35,7 @@ func (r *RecordRepo) FindByMonth(telegramID int64) ([]*model.Record, error) {
 	return records, nil
 }
 
-func (r *RecordRepo) FindByWeek(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinWeek(telegramID int64) ([]*model.Record, error) {
 	var records []*model.Record
 	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 week'", telegramID).Find(&records).Error; err != nil {
 		return nil, err
@@ -53,7 +44,7 @@ func (r *RecordRepo) FindByWeek(telegramID int64) ([]*model.Record, error) {
 	return records, nil
 }
 
-func (r *RecordRepo) FindByDay(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinDay(telegramID int64) ([]*model.Record, error) {
 	var records []*model.Record
 	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_DATE", telegramID).Find(&records).Error; err != nil {
 		return nil, err

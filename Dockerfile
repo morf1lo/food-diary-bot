@@ -4,6 +4,6 @@ COPY . .
 
 RUN go mod download
 
-RUN go build -o bot ./cmd/bot/main.go
+RUN go build -o ./cmd/bot/bot ./cmd/bot/main.go
 
-CMD ["./bot"]
+CMD ["./cmd/bot/bot"]

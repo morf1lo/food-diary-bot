@@ -8,10 +8,9 @@ import (
 type Record interface {
 	Create(record *model.Record) error
 	FindByID(id int64) (*model.Record, error)
-	FindAll(telegramID int64) ([]*model.Record, error)
-	FindByMonth(telegramID int64) ([]*model.Record, error)
-	FindByWeek(telegramID int64) ([]*model.Record, error)
-	FindByDay(telegramID int64) ([]*model.Record, error)
+	FindWithinMonth(telegramID int64) ([]*model.Record, error)
+	FindWithinWeek(telegramID int64) ([]*model.Record, error)
+	FindWithinDay(telegramID int64) ([]*model.Record, error)
 	FindLast(telegramID int64) (*model.Record, error)
 	Search(telegramID int64, query string) ([]*model.Record, error)
 	Delete(id int64) error

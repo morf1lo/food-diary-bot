@@ -1,8 +1,5 @@
 app:
-  state: "production"
-
-db:
-  sslmode: "disable"
+  state: "development"
 
 bot:
   debug: false

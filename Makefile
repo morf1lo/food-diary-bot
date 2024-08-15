@@ -1,5 +1,5 @@
 build:
-	go build -o bot ./cmd/bot/main.go
+	go build -o ./cmd/bot/bot ./cmd/bot/main.go
 
 run:
-	./bot
+	./cmd/bot/bot

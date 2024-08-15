@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +23,6 @@ Commands:
 /month - All records made within 1 month
 /week  - All records made within 1 week
 /day All records made on this day
-/all - All your records
 /last - Your last meal
 
 /search <query> - Search records that contains query
@@ -34,7 +32,7 @@ Commands:
 	}
 
 	if update.Message.Command() == "add" {
-		if err := h.services.Record.RequestToAdd(strconv.Itoa(int(update.Message.From.ID))); err != nil {
+		if err := h.services.Record.RequestToAdd(update.Message.From.ID); err != nil {
 			logrus.Fatalf("error creating redis record: %s", err.Error())
 		}
 
@@ -43,7 +41,7 @@ Commands:
 	}
 
 	if update.Message.Command() == "month" {
-		records, err := h.services.Record.FindByMonth(update.Message.From.ID)
+		records, err := h.services.Record.FindWithinMonth(update.Message.From.ID)
 		if err != nil {
 			return
 		}
@@ -55,7 +53,7 @@ Commands:
 	}
 
 	if update.Message.Command() == "week" {
-		records, err := h.services.Record.FindByWeek(update.Message.From.ID)
+		records, err := h.services.Record.FindWithinWeek(update.Message.From.ID)
 		if err != nil {
 			return
 		}
@@ -67,25 +65,13 @@ Commands:
 	}
 
 	if update.Message.Command() == "day" {
-		records, err := h.services.Record.FindByDay(update.Message.From.ID)
+		records, err := h.services.Record.FindWithinDay(update.Message.From.ID)
 		if err != nil {
 			return
 		}
 
 		text := formatText(records)
 	
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-		tgbot.Send(msg)
-	}
-
-	if update.Message.Command() == "all" {
-		records, err := h.services.Record.FindAll(update.Message.From.ID)
-		if err != nil {
-			return
-		}
-
-		text := formatText(records)
-
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 		tgbot.Send(msg)
 	}
@@ -105,7 +91,7 @@ Commands:
 	if update.Message.Command() == "search" {
 		query := strings.TrimSpace(strings.Split(update.Message.Text, "/search")[1])
 		if query == "" {
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Please type query")
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Please type query. Command should look like: /search <query>")
 			tgbot.Send(msg)
 			return
 		}
