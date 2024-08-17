@@ -1,5 +1,5 @@
 app:
-  state: "development"
+  state: "production"
 
 bot:
   debug: false
