@@ -143,8 +143,8 @@ func formatText(records []*model.Record) string {
 }
 
 func sendLongMessage(chatID int64, text string, bot *tgbotapi.BotAPI) {
+	var part string
 	for len(text) > 0 {
-		var part string
 		if len(text) > maxMessageLength {
 			part = text[:maxMessageLength]
 
