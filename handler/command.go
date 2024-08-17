@@ -143,28 +143,25 @@ func formatText(records []*model.Record) string {
 }
 
 func sendLongMessage(chatID int64, text string, bot *tgbotapi.BotAPI) {
-	var part string
-	for len(text) > 0 {
-		if len(text) > maxMessageLength {
-			part = text[:maxMessageLength]
-
-			lastSpace := strings.LastIndex(part, "\n")
-			if lastSpace == -1 {
-				lastSpace = strings.LastIndex(part, " ")
-			}
-			if lastSpace != -1 {
-				part = text[:lastSpace]
-			}
-
-			msg := tgbotapi.NewMessage(chatID, part)
-			bot.Send(msg)
-			text = text[len(part):]
-		} else {
-			part = text
-			text = ""
+	for len(text) > maxMessageLength {
+		part := text[:maxMessageLength]
+		
+		lastSpace := strings.LastIndex(part, "\n")
+		if lastSpace == -1 {
+			lastSpace = strings.LastIndex(part, " ")
+		}
+		if lastSpace != -1 {
+			part = text[:lastSpace]
 		}
 
 		msg := tgbotapi.NewMessage(chatID, part)
+		bot.Send(msg)
+
+		text = text[len(part):]
+	}
+
+	if len(text) > 0 {
+		msg := tgbotapi.NewMessage(chatID, text)
 		bot.Send(msg)
 	}
 }
