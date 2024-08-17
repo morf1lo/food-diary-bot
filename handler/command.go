@@ -9,13 +9,32 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const maxMessageLength = 4096
+
 func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	if update.Message.Command() == "start" {
+	command := update.Message.Command()
+
+	if _, ok := h.lastCommands[update.Message.From.ID][command]; !ok {
+		h.lastCommands[update.Message.From.ID] = make(map[string]time.Time)
+	}
+
+	if command == "day" || command == "week" || command == "month" || command == "search" {
+		if lastTime, ok := h.lastCommands[update.Message.From.ID][command]; ok {
+			if time.Since(lastTime) < cooldownDuration {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "You are using commands too quickly. Please wait before using this command again")
+				tgbot.Send(msg)
+				return
+			}
+		}
+		h.lastCommands[update.Message.From.ID][command] = time.Now()
+	}
+
+	if command == "start" {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Hello!")
 		tgbot.Send(msg)
 	}
 
-	if update.Message.Command() == "help" {
+	if command == "help" {
 		msgText := `
 Commands:
 /add - Create a record
@@ -31,7 +50,7 @@ Commands:
 		tgbot.Send(msg)
 	}
 
-	if update.Message.Command() == "add" {
+	if command == "add" {
 		if err := h.services.Record.RequestToAdd(update.Message.From.ID); err != nil {
 			logrus.Fatalf("error creating redis record: %s", err.Error())
 		}
@@ -40,31 +59,27 @@ Commands:
 		tgbot.Send(msg)
 	}
 
-	if update.Message.Command() == "month" {
+	if command == "month" {
 		records, err := h.services.Record.FindWithinMonth(update.Message.From.ID)
 		if err != nil {
 			return
 		}
 
 		text := formatText(records)
-	
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-		tgbot.Send(msg)
+		sendLongMessage(update.Message.Chat.ID, text, tgbot)
 	}
 
-	if update.Message.Command() == "week" {
+	if command == "week" {
 		records, err := h.services.Record.FindWithinWeek(update.Message.From.ID)
 		if err != nil {
 			return
 		}
 
 		text := formatText(records)
-	
-		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
-		tgbot.Send(msg)
+		sendLongMessage(update.Message.Chat.ID, text, tgbot)
 	}
 
-	if update.Message.Command() == "day" {
+	if command == "day" {
 		records, err := h.services.Record.FindWithinDay(update.Message.From.ID)
 		if err != nil {
 			return
@@ -76,7 +91,7 @@ Commands:
 		tgbot.Send(msg)
 	}
 
-	if update.Message.Command() == "last" {
+	if command == "last" {
 		record, err := h.services.Record.FindLast(update.Message.From.ID)
 		if err != nil {
 			return
@@ -88,7 +103,7 @@ Commands:
 		tgbot.Send(msg)
 	}
 
-	if update.Message.Command() == "search" {
+	if command == "search" {
 		query := strings.TrimSpace(strings.Split(update.Message.Text, "/search")[1])
 		if query == "" {
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Please type query. Command should look like: /search <query>")
@@ -125,4 +140,31 @@ func formatText(records []*model.Record) string {
 	}
 
 	return text
+}
+
+func sendLongMessage(chatID int64, text string, bot *tgbotapi.BotAPI) {
+	for len(text) > 0 {
+		var part string
+		if len(text) > maxMessageLength {
+			part = text[:maxMessageLength]
+
+			lastSpace := strings.LastIndex(part, "\n")
+			if lastSpace == -1 {
+				lastSpace = strings.LastIndex(part, " ")
+			}
+			if lastSpace != -1 {
+				part = text[:lastSpace]
+			}
+
+			msg := tgbotapi.NewMessage(chatID, part)
+			bot.Send(msg)
+			text = text[len(part):]
+		} else {
+			part = text
+			text = ""
+		}
+
+		msg := tgbotapi.NewMessage(chatID, part)
+		bot.Send(msg)
+	}
 }
