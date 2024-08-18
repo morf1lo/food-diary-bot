@@ -3,5 +3,6 @@ package service
 import "errors"
 
 var (
-	errIDK = errors.New("idk")
+	ErrIDK = errors.New("idk")
+	ErrDailyLimitReached = errors.New("you have reached the daily limit of 8 records")
 )

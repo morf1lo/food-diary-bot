@@ -30,12 +30,34 @@ func (s *RecordService) RequestToAdd(userID int64) error {
 
 func (s *RecordService) Create(record *model.Record) error {
 	sess := s.rdb.Get(ctx, CreateRecordSessionPrefix(record.UserID)).Val()
-	if sess == "true" {
-		s.rdb.Del(ctx, CreateRecordSessionPrefix(record.UserID))
-		return s.repo.Record.Create(record)
+	if sess != "true" {
+		return ErrIDK
 	}
 
-	return errIDK
+	s.rdb.Del(ctx, CreateRecordSessionPrefix(record.UserID))
+
+	today := time.Now().Format("2006-01-02")
+
+	recordCount, err := s.rdb.Get(ctx, RecordsPerDayPrefix(record.UserID, today)).Int()
+	if err != nil && err != redis.Nil {
+		return err
+	}
+
+	if recordCount >= 8 {
+		return ErrDailyLimitReached
+	}
+
+	if err := s.repo.Record.Create(record); err != nil {
+		return err
+	}
+
+	if err := s.rdb.Incr(ctx, RecordsPerDayPrefix(record.UserID, today)).Err(); err != nil {
+		return err
+	}
+
+	now := time.Now()
+	midnight := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+	return s.rdb.ExpireAt(ctx, RecordsPerDayPrefix(record.UserID, today), midnight).Err()
 }
 
 func (s *RecordService) FindByID(id int64) (*model.Record, error) {
