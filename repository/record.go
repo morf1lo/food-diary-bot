@@ -26,45 +26,45 @@ func (r *RecordRepo) FindByID(id int64) (*model.Record, error) {
 	return &record, nil
 }
 
-func (r *RecordRepo) FindWithinMonth(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinMonth(userID int64) ([]*model.Record, error) {
 	var records []*model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month'", telegramID).Find(&records).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month'", userID).Find(&records).Error; err != nil {
 		return nil, err
 	}
 
 	return records, nil
 }
 
-func (r *RecordRepo) FindWithinWeek(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinWeek(userID int64) ([]*model.Record, error) {
 	var records []*model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 week'", telegramID).Find(&records).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 week'", userID).Find(&records).Error; err != nil {
 		return nil, err
 	}
 
 	return records, nil
 }
 
-func (r *RecordRepo) FindWithinDay(telegramID int64) ([]*model.Record, error) {
+func (r *RecordRepo) FindWithinDay(userID int64) ([]*model.Record, error) {
 	var records []*model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_DATE", telegramID).Find(&records).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_DATE", userID).Find(&records).Error; err != nil {
 		return nil, err
 	}
 
 	return records, nil
 }
 
-func (r *RecordRepo) FindLast(telegramID int64) (*model.Record, error) {
+func (r *RecordRepo) FindLast(userID int64) (*model.Record, error) {
 	var record model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 ORDER BY r.date_added DESC LIMIT 1", telegramID).First(&record).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 ORDER BY r.date_added DESC LIMIT 1", userID).First(&record).Error; err != nil {
 		return nil, err
 	}
 
 	return &record, nil
 }
 
-func (r *RecordRepo) Search(telegramID int64, query string) ([]*model.Record, error) {
+func (r *RecordRepo) Search(userID int64, query string) ([]*model.Record, error) {
 	var records []*model.Record
-	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month' AND r.body ILIKE $2", telegramID, "%"+query+"%").Find(&records).Error; err != nil {
+	if err := r.db.Raw("SELECT * FROM records r WHERE r.user_id = $1 AND r.date_added >= CURRENT_TIMESTAMP - INTERVAL '1 month' AND r.body ILIKE $2", userID, "%"+query+"%").Find(&records).Error; err != nil {
 		return nil, err
 	}
 

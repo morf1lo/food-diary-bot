@@ -69,8 +69,8 @@ func (s *RecordService) FindByID(id int64) (*model.Record, error) {
 	return record, nil
 }
 
-func (s *RecordService) FindWithinMonth(telegramID int64) ([]*model.Record, error) {
-	recordsCache, err := s.rdb.Get(ctx, RecordsWithinMonthPrefix(telegramID)).Result()
+func (s *RecordService) FindWithinMonth(userID int64) ([]*model.Record, error) {
+	recordsCache, err := s.rdb.Get(ctx, RecordsWithinMonthPrefix(userID)).Result()
 	if err == nil {
 		var records []*model.Record
 		if err := json.Unmarshal([]byte(recordsCache), &records); err != nil {
@@ -83,7 +83,7 @@ func (s *RecordService) FindWithinMonth(telegramID int64) ([]*model.Record, erro
 		return nil, err
 	}
 
-	recordsDB, err := s.repo.Record.FindWithinMonth(telegramID)
+	recordsDB, err := s.repo.Record.FindWithinMonth(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,15 +93,15 @@ func (s *RecordService) FindWithinMonth(telegramID int64) ([]*model.Record, erro
 		return nil, err
 	}
 
-	if err := s.rdb.Set(ctx, RecordsWithinMonthPrefix(telegramID), recordsJSON, time.Minute).Err(); err != nil {
+	if err := s.rdb.Set(ctx, RecordsWithinMonthPrefix(userID), recordsJSON, time.Minute).Err(); err != nil {
 		return nil, err
 	}
 
 	return recordsDB, nil
 }
 
-func (s *RecordService) FindWithinWeek(telegramID int64) ([]*model.Record, error) {
-	recordsCache, err := s.rdb.Get(ctx, RecordsWithinWeekPrefix(telegramID)).Result()
+func (s *RecordService) FindWithinWeek(userID int64) ([]*model.Record, error) {
+	recordsCache, err := s.rdb.Get(ctx, RecordsWithinWeekPrefix(userID)).Result()
 	if err == nil {
 		var records []*model.Record
 		if err := json.Unmarshal([]byte(recordsCache), &records); err != nil {
@@ -114,7 +114,7 @@ func (s *RecordService) FindWithinWeek(telegramID int64) ([]*model.Record, error
 		return nil, err
 	}
 
-	recordsDB, err := s.repo.Record.FindWithinWeek(telegramID)
+	recordsDB, err := s.repo.Record.FindWithinWeek(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -124,15 +124,15 @@ func (s *RecordService) FindWithinWeek(telegramID int64) ([]*model.Record, error
 		return nil, err
 	}
 
-	if err := s.rdb.Set(ctx, RecordsWithinWeekPrefix(telegramID), recordsJSON, time.Minute).Err(); err != nil {
+	if err := s.rdb.Set(ctx, RecordsWithinWeekPrefix(userID), recordsJSON, time.Minute).Err(); err != nil {
 		return nil, err
 	}
 
 	return recordsDB, nil
 }
 
-func (s *RecordService) FindWithinDay(telegramID int64) ([]*model.Record, error) {
-	records, err := s.repo.Record.FindWithinDay(telegramID)
+func (s *RecordService) FindWithinDay(userID int64) ([]*model.Record, error) {
+	records, err := s.repo.Record.FindWithinDay(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +140,8 @@ func (s *RecordService) FindWithinDay(telegramID int64) ([]*model.Record, error)
 	return records, nil
 }
 
-func (s *RecordService) FindLast(telegramID int64) (*model.Record, error) {
-	record, err := s.repo.Record.FindLast(telegramID)
+func (s *RecordService) FindLast(userID int64) (*model.Record, error) {
+	record, err := s.repo.Record.FindLast(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -149,8 +149,8 @@ func (s *RecordService) FindLast(telegramID int64) (*model.Record, error) {
 	return record, nil
 }
 
-func (s *RecordService) Search(telegramID int64, query string) ([]*model.Record, error) {
-	records, err := s.repo.Record.Search(telegramID, query)
+func (s *RecordService) Search(userID int64, query string) ([]*model.Record, error) {
+	records, err := s.repo.Record.Search(userID, query)
 	if err != nil {
 		return nil, err
 	}
