@@ -11,7 +11,16 @@ import (
 
 const maxMessageLength = 4096
 
-var replyMarkup = tgbotapi.NewReplyKeyboard(tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("add")))
+var replyMarkup = tgbotapi.NewReplyKeyboard(
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("/add"),
+	),
+	tgbotapi.NewKeyboardButtonRow(
+		tgbotapi.NewKeyboardButton("/month"),
+		tgbotapi.NewKeyboardButton("/week"),
+		tgbotapi.NewKeyboardButton("/day"),
+	),
+)
 
 func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	command := update.Message.Command()
