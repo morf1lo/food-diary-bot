@@ -11,6 +11,8 @@ import (
 
 const maxMessageLength = 4096
 
+var replyMarkup = tgbotapi.NewReplyKeyboard(tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("add")))
+
 func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 	command := update.Message.Command()
 
@@ -31,6 +33,7 @@ func (h *Handler) Command(tgbot *tgbotapi.BotAPI, update tgbotapi.Update) {
 
 	if command == "start" {
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Hello!")
+		msg.ReplyMarkup = replyMarkup
 		tgbot.Send(msg)
 	}
 
